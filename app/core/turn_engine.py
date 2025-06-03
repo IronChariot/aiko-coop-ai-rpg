@@ -59,6 +59,7 @@ class TurnEngine:
         self.last_player_action: Optional[str] = None
         self.last_partner_action: Optional[str] = None
         self.since_partner_last_turn: List[str] = []  # Track what happened since partner's last turn
+        self.since_gm_last_turn: List[str] = []  # Track what happened since GM's last turn
         self.recent_actions: List[str] = []  # Track recent actions for conversation analysis
         
         # Load and set the starting scene
@@ -86,13 +87,22 @@ class TurnEngine:
         
         if current_actor == "gm":
             # GM's turn to describe the situation
-            if self.last_player_action:
-                message = f"Player's action: {self.last_player_action}"
+            if self.since_gm_last_turn:
+                # Build a comprehensive message of what happened since GM's last turn
+                message = "Here's what happened since your last turn:\n"
+                for event in self.since_gm_last_turn:
+                    message += f"- {event}\n"
+                message += "What happens next?"
             else:
-                message = f"Partner's action: {self.last_partner_action}"
+                # Fallback to single action if no history
+                if self.last_player_action:
+                    message = f"Player's action: {self.last_player_action}"
+                else:
+                    message = f"Partner's action: {self.last_partner_action}"
             
             response = self.gm.process_turn(message)
             self.since_partner_last_turn.append(f"GM: {response}")
+            self.since_gm_last_turn = []  # Clear GM's history after processing
             responses["gm"] = response
             
             # Update state based on current state
@@ -115,13 +125,19 @@ class TurnEngine:
             response = self.partner.process_turn(context)
             self.last_partner_action = response
             responses["partner"] = response
-            self.last_player_action = None
             
             # Clear the history since partner's last turn
             self.since_partner_last_turn = []
             
-            # Move to GM's response to partner
-            self.turn_state = TurnState.GM_PARTNER_RESPONSE
+            # Add partner's response to GM's history
+            self.since_gm_last_turn.append(f"Partner: {response}")
+            
+            # Move to GM's response to partner, unless the player's action ended with a tilde
+            if self.last_player_action.strip().endswith("~"):
+                self.turn_state = TurnState.PLAYER_TURN
+            else:
+                self.turn_state = TurnState.GM_PARTNER_RESPONSE
+            self.last_player_action = None
             
         elif current_actor == "player":
             if player_input is None or player_input.strip() == "":
@@ -133,9 +149,18 @@ class TurnEngine:
             # Store player's action
             self.last_player_action = player_input
             self.since_partner_last_turn.append(f"Player: {player_input}")
+            self.since_gm_last_turn.append(f"Player: {player_input}")
             
-            # Move to GM's response
-            self.turn_state = TurnState.GM_RESPONSE
+            # Check for special endings
+            if player_input.strip().endswith("..."):
+                # Ellipsis: Skip partner, go straight to GM then back to player
+                self.turn_state = TurnState.GM_RESPONSE
+            elif player_input.strip().endswith("~"):
+                # Tilde: Skip GM, go straight to partner then back to player
+                self.turn_state = TurnState.PARTNER_TURN
+            else:
+                # Normal flow: Go to GM
+                self.turn_state = TurnState.GM_RESPONSE
         
         # Log the turn
         self.turn_log.append({
