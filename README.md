@@ -9,6 +9,9 @@ An AI-powered cooperative RPG system where you play alongside an AI companion in
 - AI Partner that accompanies you on your adventure
 - Persistent story state that can be saved and loaded
 - Turn-based gameplay with natural conversation flow
+- Special turn controls:
+  - End action with `...` to skip partner and get quick GM response
+  - End action with `~` to skip GM and get quick partner response
 
 ## Setup
 
@@ -25,9 +28,10 @@ pip install -e .
 
 3. Set up environment variables:
 ```bash
-cp .env.example .env
+# Set your Grok API key
+export GROK_API_KEY=your_api_key_here  # For Linux/Mac
+set GROK_API_KEY=your_api_key_here     # For Windows
 ```
-Then edit `.env` and add your Grok API key.
 
 ## Usage
 
@@ -46,13 +50,18 @@ python -m app.ui.cli
 6. Press Enter to skip your turn and let your partner continue
 7. Type 'quit' to save and exit
 
+### Special Turn Controls
+
+- End your action with `...` to skip the partner's turn and get a quick response from the GM
+- End your action with `~` to skip the GM's turn and get a quick response from your partner
+- These controls are useful for quick back-and-forth conversations or when you just want to say something to your partner
+
 ### File Structure
 
 ```
 aiko-coop-rpg/
 ├─ README.md
 ├─ pyproject.toml          (packaging + dependencies)
-├─ .env.example            (API keys, storage paths)
 ├─ /app                    ← all first-party source
 │  ├─ /core               (framework-agnostic plumbing)
 │  ├─ /agents             (AI agent implementations)
