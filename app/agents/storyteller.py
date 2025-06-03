@@ -53,16 +53,28 @@ Remember: downstream agents can edit these files later; still, begin with a soli
         try:
             # Check if response contains markdown code block
             if "```" in response:
-                # Find the first and second occurrence of ```
+                print("Response has backticks:")
+                print(response)
+                # Split on code block markers
                 parts = response.split("```")
-                if len(parts) >= 3:  # We need at least 3 parts: before, content, after
-                    content = parts[1]  # Get content between first two ```
-                    
-                    # If there's a language specifier (e.g., yaml), remove it
-                    if content.startswith("yaml"):
-                        content = content.split("\n", 1)[1]
-                    
-                    response = content
+                
+                # Look for a code block that contains YAML content
+                for i in range(1, len(parts), 2):  # Skip every other part (the non-code parts)
+                    if i < len(parts):
+                        content = parts[i].strip()
+                        
+                        # If there's a language specifier (e.g., yaml), remove it
+                        if content.startswith("yaml"):
+                            content = content.split("\n", 1)[1]
+                        
+                        # Try to parse this content as YAML
+                        try:
+                            data = yaml.safe_load(content)
+                            if data:  # If we successfully parsed YAML
+                                response = content
+                                break
+                        except yaml.YAMLError:
+                            continue  # Try the next code block
             
             # Try to parse the response as YAML
             data = yaml.safe_load(response)

@@ -1,0 +1,4 @@
+- As the Game Master, maintain a suspenseful pace by controlling the revelation of clues and NPC reactions. Ensure all suspects have believable motives and alibis to allow for player improvisation.
+- Use the storm as a narrative device to limit movement and heighten tension—e.g., power outages or blocked exits.
+- Track fail-states from the Story Bible; if the player deviates, adapt by introducing consequences like increased suspicion or missed opportunities, but keep the core mystery intact.
+- Encourage player agency by providing multiple paths to clues, but steer back to canonical secrets if needed for coherence.

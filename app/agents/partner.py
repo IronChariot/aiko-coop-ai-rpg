@@ -2,9 +2,8 @@ from typing import Dict, Any
 from pathlib import Path
 from .base import BaseAgent
 
-class Partner(BaseAgent):
-    def __init__(self):
-        system_prompt = """You are the player character's partner in a cooperative RPG. Your role is to:
+# Base system prompt for the Partner
+PARTNER_SYSTEM_PROMPT = """You are the player character's partner in a cooperative RPG. Your role is to:
 1. Support and assist the player character
 2. React authentically to events and situations
 3. Maintain your unique personality and voice
@@ -22,6 +21,7 @@ For narration and actions:
 - ALWAYS refer to yourself in the third person (e.g., "The partner examines the map" not "I examine the map")
 - Use your character's name when appropriate
 - Describe your actions in third person
+- Do not use fourth wall breaking terms like "NPCs" or "player character"
 
 For dialogue:
 - Use first person ("I", "me", "my") when speaking
@@ -29,8 +29,10 @@ For dialogue:
 - Example: "The partner approaches the door, examining it carefully. 'I think I see something interesting here,' she says, pointing to a small mark."
 
 Remember: You are a companion, not a sidekick. You have your own agency and can disagree with the player character when appropriate. Your responses should read like part of a story, with actions in third person but dialogue in first person."""
-        
-        super().__init__(system_prompt=system_prompt)
+
+class Partner(BaseAgent):
+    def __init__(self):
+        super().__init__(system_prompt=PARTNER_SYSTEM_PROMPT)
         self.story_dir = None
 
     def initialize(
@@ -44,12 +46,11 @@ Remember: You are a companion, not a sidekick. You have your own agency and can 
         """Initialize the partner with story context."""
         self.story_dir = story_dir
         
-        # Add the story context as a system message
-        context = f"""WORLD BIBLE:
-{world_bible}
+        # Combine all context into a single system message
+        context = f"""{PARTNER_SYSTEM_PROMPT}
 
-STORY BIBLE:
-{story_bible}
+WORLD BIBLE:
+{world_bible}
 
 PARTNER PROFILE:
 {partner_profile}
@@ -57,7 +58,8 @@ PARTNER PROFILE:
 PARTNER SETUP:
 {partner_setup}"""
         
-        self.add_message("system", context)
+        # Set the combined system prompt
+        self.messages = [{"role": "system", "content": context}]
         
         # Load previous memory if it exists
         memory_file = self.story_dir / "partner_memory.json"

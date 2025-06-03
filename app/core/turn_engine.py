@@ -37,7 +37,7 @@ class TurnEngine:
         )
         
         # Set initial state
-        self.current_turn = 0
+        self.current_turn = 1  # Start at 1 since GM has already had a turn with starting scene
         self.last_gm_message = self.starting_scene
         self.last_partner_message = None
         self.last_player_message = None
@@ -49,8 +49,6 @@ class TurnEngine:
             "relationships": {}
         }
         self.turn_log: List[Dict[str, Any]] = []
-        self.current_turn = "player"  # Can be "gm", "partner", or "player". It's initially the player's turn, since the game starts with the starting scene already displayed.
-        self.last_gm_description = ""
         self.last_player_action: Optional[str] = None
         self.last_partner_action: Optional[str] = None
         self.since_partner_last_turn: List[str] = []  # Track what happened since partner's last turn
@@ -58,72 +56,75 @@ class TurnEngine:
         
         # Load and set the starting scene
         if self.starting_scene:
-            self.last_gm_description = self.starting_scene
             # Add starting scene to partner's context
-            self.since_partner_last_turn.append(f"GM: {self.last_gm_description}")
+            self.since_partner_last_turn.append(f"GM: {self.starting_scene}")
         
         # Add the starting scene as the first assistant message
         self.gm.add_message("assistant", self.starting_scene)
 
+    def get_current_actor(self) -> str:
+        """Determine whose turn it is based on the turn number."""
+        actor = "gm" if self.current_turn % 2 == 0 else "partner" if (self.current_turn - 3) % 4 == 0 else "player"
+        # print(f"\nDEBUG: Turn {self.current_turn} - Current actor: {actor}")
+        return actor
+
     def process_turn(self, player_input: Optional[str] = None) -> Dict[str, str]:
         """Process a turn and return the responses from GM and partner."""
         responses = {}
+        current_actor = self.get_current_actor()
+        # print(f"DEBUG: Processing turn for {current_actor}")
+        # print(f"DEBUG: Last player action: {self.last_player_action}")
+        # print(f"DEBUG: Last partner action: {self.last_partner_action}")
         
-        if self.current_turn == "gm":
+        if current_actor == "gm":
             # GM's turn to describe the situation
             if self.last_player_action:
                 message = f"Player's action: {self.last_player_action}"
             else:
                 message = f"Partner's action: {self.last_partner_action}"
             
-            response = self.gm.process_turn(message, "player" if self.last_player_action else "partner")
-            self.last_gm_description = response
+            # print(f"DEBUG: Sending to GM: {message}")
+            response = self.gm.process_turn(message)
+            self.since_partner_last_turn.append(f"GM: {response}")
             responses["gm"] = response
             
-            # After GM, go to whoever hasn't had a turn most recently
-            # If both have had turns, go to partner
-            if self.last_partner_action and not self.last_player_action:
-                self.current_turn = "player"
-            else:
-                self.current_turn = "partner"
-            
-        elif self.current_turn == "partner":
+        elif current_actor == "partner":
             # Partner's turn to act
             # Include everything that happened since their last turn
             context = "Here's what happened since your last turn:\n"
             for event in self.since_partner_last_turn:
                 context += f"- {event}\n"
-            context += f"\nCurrent situation: {self.last_gm_description}\n"
-            if self.last_player_action:
-                context += f"Player's action: {self.last_player_action}\n"
             context += "What do you do or say?"
             
+            # print(f"DEBUG: Sending to Partner: {context}")
             response = self.partner.process_turn(context)
             self.last_partner_action = response
             responses["partner"] = response
+            self.last_player_action = None
             
             # Clear the history since partner's last turn
             self.since_partner_last_turn = []
             
-            # After partner, it's GM's turn
-            self.current_turn = "gm"
-            
-        elif self.current_turn == "player":
+        elif current_actor == "player":
             if player_input is None or player_input.strip() == "":
-                # Player skipped their turn, go back to partner
-                self.current_turn = "partner"
+                # Player skipped their turn, increment turn counter and process next turn
+                # print("DEBUG: Player skipped turn")
+                self.current_turn += 1
                 return self.process_turn()
             
-            # Store player's action and move to GM's turn
+            # Store player's action
+            # print(f"DEBUG: Player action: {player_input}")
             self.last_player_action = player_input
             self.since_partner_last_turn.append(f"Player: {player_input}")
-            
-            self.current_turn = "gm"
-            return self.process_turn()
+        
+        # Increment turn counter after processing the turn
+        self.current_turn += 1
+        # print(f"DEBUG: Turn counter incremented to {self.current_turn}")
         
         # Log the turn
         self.turn_log.append({
             "turn": self.current_turn,
+            "actor": current_actor,
             "responses": responses,
             "player_input": player_input
         })

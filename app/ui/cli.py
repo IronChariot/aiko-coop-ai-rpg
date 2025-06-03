@@ -64,13 +64,20 @@ def main():
     print("Please refer to your character in the third person (e.g., 'The hero draws their sword' instead of 'I draw my sword').")
     
     while True:
-        # Get player input
-        player_input = input("\n> ")
+        # Get current actor
+        current_actor = engine.get_current_actor()
         
-        if player_input.lower() == "quit":
-            engine.save_state()
-            print("\nGame saved. Goodbye!")
-            break
+        if current_actor == "player":
+            # Get player input
+            player_input = input("\n> ")
+            
+            if player_input.lower() == "quit":
+                engine.save_state()
+                print("\nGame saved. Goodbye!")
+                break
+        else:
+            # For GM and partner turns, pass None as player input
+            player_input = None
         
         # Process turn
         responses = engine.process_turn(player_input)

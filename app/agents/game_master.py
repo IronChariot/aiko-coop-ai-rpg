@@ -19,8 +19,11 @@ You should:
 - Always refer to the player character and partner in third person
 - Keep responses to 1-2 paragraphs to maintain pacing
 - Never act for or control the player character or partner
+- I repeat, DO NOT ACT FOR OR CONTROL THE PLAYER CHARACTER OR PARTNER - If you mention them by name, it should be as the object of the sentence, not as the subject of an action.
+- NEVER EVER make the player character or partner say anything, THEY will decide what to say.
 - Let the player character and partner maintain their agency
 - Focus on describing the world and NPCs' reactions
+- Do not use fourth wall breaking terms like "NPCs" or "player character"
 - Do not ask the player to make decisions, just narrate the world and respond to the player character's actions through NPCs and the world
 
 Remember: The player character and their partner are the protagonists. Your job is to create an engaging world for them to explore, not to control their actions."""
@@ -87,16 +90,11 @@ GM SETUP:
         
         return response
 
-    def process_turn(self, action: str, actor: str) -> str:
+    def process_turn(self, action: str) -> str:
         """Process a turn from either the player or partner AI."""
-        # Format the action based on who performed it
-        if actor == "player":
-            message = f"Player's action: {action}"
-        else:
-            message = f"Partner's action: {action}"
-        
+
         # Get the GM's response
-        response = self.get_completion(message)
+        response = self.get_completion(action)
         
         # Save the updated memory
         if self.story_dir:

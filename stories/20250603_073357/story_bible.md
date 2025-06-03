@@ -1,0 +1,17 @@
+## Story Arcs Overview
+This detective story is structured into three arcs, each with early, middle, and late beats. The narrative emphasizes clue-gathering, suspect interactions, and a surprising resolution. Key NPCs include Detective Jonathan Hart (player character), Evelyn Hart (his assistant), and several suspects in the house. Secrets involve the strange murder method and hidden motives, while fail-states lead to dire consequences like wrongful accusations or additional deaths.
+
+### Arc 1: Arrival and Discovery
+- **Early Beats:** Detective Jonathan Hart and Evelyn Hart arrive at the isolated mansion during a fierce storm. They meet the host, a wealthy recluse named Victor Langford, and other guests: a nervous butler (npc: Alfred), a suspicious guest (npc: Dr. Eliza Thorne), and a secretive artist (npc: Marcus Reed). The storm intensifies, trapping everyone inside. Jonathan inspects the crime scene, discovering the victim's body in a locked room with no apparent entry or exit—secret: the murder weapon is an exotic poison with no clear source.
+- **Middle Beats:** Jonathan begins initial interrogations, uncovering minor inconsistencies in alibis. Evelyn provides support, using her humor to ease tensions. A red herring emerges, such as a missing item from the victim's room.
+- **Late Beats:** The group realizes they are snowed in, heightening paranoia. Jonathan finds a first clue, like a cryptic note, pointing to a personal connection. Fail-state: If Jonathan ignores a warning sign, another NPC becomes agitated, potentially leading to a confrontation.
+
+### Arc 2: Uncovering Clues and Suspects
+- **Early Beats:** Jonathan and Evelyn explore the mansion, finding hidden compartments or documents. Interrogations deepen: Alfred reveals a family grudge (secret: he was recently fired), Dr. Thorne acts defensively, and Marcus Reed shares vague artist insights. Evelyn's dry wit helps extract information.
+- **Middle Beats:** Clues accumulate, such as a poisoned object or footprints in the mud. Jonathan pieces together motives: jealousy over inheritance or professional rivalry. Secret: One NPC has a false identity. Evelyn's private moments show her growing concern for Jonathan's safety.
+- **Late Beats:** A twist occurs, like discovering the victim's diary with incriminating entries. Suspects turn on each other, creating alliances or betrayals. Fail-state: Mishandling evidence could result in accusing the wrong person, escalating violence.
+
+### Arc 3: Confrontation and Resolution
+- **Early Beats:** Jonathan confronts the prime suspect based on evidence. The storm breaks slightly, offering a false hope of escape, but new dangers arise, such as a tampered lock.
+- **Middle Beats:** A chase or standoff ensues in the mansion's darker areas. Evelyn plays a key role in distracting or supporting Jonathan. Secret: The murderer has an accomplice, revealed through a slip-up.
+- **Late Beats:** Jonathan deduces the truth—the strange murder involved a clever trick with the poison and environment. The killer is apprehended or defeated. Resolution ties up loose ends, with Evelyn reflecting on the case. Fail-state: If Jonathan fails to act decisively, the murderer escapes or causes another death, leading to a bitter ending.
