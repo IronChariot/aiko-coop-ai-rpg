@@ -4,6 +4,7 @@ from enum import Enum, auto
 from ..agents.game_master import GameMaster
 from ..agents.partner import Partner
 from ..agents.storyteller import Storyteller
+import json
 
 class TurnState(Enum):
     PLAYER_TURN = auto()
@@ -61,11 +62,17 @@ class TurnEngine:
         self.since_partner_last_turn: List[str] = []  # Track what happened since partner's last turn
         self.since_gm_last_turn: List[str] = []  # Track what happened since GM's last turn
         self.recent_actions: List[str] = []  # Track recent actions for conversation analysis
+        self.message_history: List[Dict[str, str]] = []  # Track last few messages
         
         # Load and set the starting scene
         if self.starting_scene:
             # Add starting scene to partner's context
             self.since_partner_last_turn.append(f"GM: {self.starting_scene}")
+            # Add to message history
+            self.message_history.append({
+                "role": "gm",
+                "content": self.starting_scene
+            })
         
         # Add the starting scene as the first assistant message
         self.gm.add_message("assistant", self.starting_scene)
@@ -79,6 +86,26 @@ class TurnEngine:
         elif self.turn_state == TurnState.PARTNER_TURN:
             return "partner"
         return "player"  # Default to player if something goes wrong
+
+    def get_recent_messages(self, count: int = 3) -> List[Dict[str, str]]:
+        """Get the most recent messages from the history."""
+        return self.message_history[-count:] if self.message_history else []
+
+    def generate_summary(self) -> str:
+        """Generate a summary of the story so far using the GM's context."""
+        # Get all messages from GM's context
+        messages = self.gm.get_messages()
+        if not messages:
+            return "No story progress yet."
+        
+        # Create a prompt for summary generation
+        summary_prompt = "Based on the following conversation history, provide a brief summary of what has happened in the story so far:\n\n"
+        for msg in messages:
+            summary_prompt += f"{msg['role']}: {msg['content']}\n"
+        
+        # Get summary from GM
+        summary = self.gm.process_turn(summary_prompt)
+        return summary
 
     def process_turn(self, player_input: Optional[str] = None) -> Dict[str, str]:
         """Process a turn and return the responses from GM and partner."""
@@ -105,6 +132,12 @@ class TurnEngine:
             self.since_gm_last_turn = []  # Clear GM's history after processing
             responses["gm"] = response
             
+            # Add to message history
+            self.message_history.append({
+                "role": "gm",
+                "content": response
+            })
+            
             # Update state based on current state
             if self.turn_state == TurnState.GM_RESPONSE:
                 # Check if player's action ended with ellipsis
@@ -125,6 +158,12 @@ class TurnEngine:
             response = self.partner.process_turn(context)
             self.last_partner_action = response
             responses["partner"] = response
+            
+            # Add to message history
+            self.message_history.append({
+                "role": "partner",
+                "content": response
+            })
             
             # Clear the history since partner's last turn
             self.since_partner_last_turn = []
@@ -150,6 +189,12 @@ class TurnEngine:
             self.last_player_action = player_input
             self.since_partner_last_turn.append(f"Player: {player_input}")
             self.since_gm_last_turn.append(f"Player: {player_input}")
+            
+            # Add to message history
+            self.message_history.append({
+                "role": "player",
+                "content": player_input
+            })
             
             # Check for special endings
             if player_input.strip().endswith("..."):
@@ -183,6 +228,11 @@ class TurnEngine:
         # Save agent memories
         self.gm.save_memory(self.story_dir / "gm_memory.json")
         self.partner.save_memory(self.story_dir / "partner_memory.json")
+        
+        # Save message history
+        history_file = self.story_dir / "message_history.json"
+        with open(history_file, "w") as f:
+            json.dump(self.message_history, f)
 
     def load_state(self) -> None:
         """Load the game state from saved files."""
@@ -194,4 +244,10 @@ class TurnEngine:
         
         # Load agent memories
         self.gm.load_memory(self.story_dir / "gm_memory.json")
-        self.partner.load_memory(self.story_dir / "partner_memory.json") 
+        self.partner.load_memory(self.story_dir / "partner_memory.json")
+        
+        # Load message history
+        history_file = self.story_dir / "message_history.json"
+        if history_file.exists():
+            with open(history_file) as f:
+                self.message_history = json.load(f) 

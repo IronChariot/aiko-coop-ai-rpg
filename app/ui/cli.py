@@ -46,22 +46,36 @@ def main():
     
     if choice == "1":
         story_dir = create_new_story()
+        engine = TurnEngine(story_dir)
+        # Show the starting scene if it exists
+        starting_scene = story_dir / "starting_scene.txt"
+        if starting_scene.exists():
+            print("\n[GM] " + starting_scene.read_text())
     else:
         story_id = input("\nEnter story ID: ")
         story_dir = load_story(story_id)
-    
-    # Initialize turn engine
-    engine = TurnEngine(story_dir)
-    
-    # Show the starting scene if it exists
-    starting_scene = story_dir / "starting_scene.txt"
-    if starting_scene.exists():
-        print("\n[GM] " + starting_scene.read_text())
+        engine = TurnEngine(story_dir)
+        engine.load_state()
+        
+        # Generate and show summary
+        print("\n=== Story Summary ===")
+        summary = engine.generate_summary()
+        print(summary)
+        print("===================\n")
+        
+        # Show recent messages
+        print("=== Recent Messages ===")
+        recent_messages = engine.get_recent_messages(3)
+        for msg in recent_messages:
+            role = msg["role"].capitalize()
+            print(f"\n[{role}] {msg['content']}")
+        print("=====================\n")
     
     # Main game loop
     print("\nGame started! Type 'quit' to exit, or press Enter to skip your turn.")
-    print("For dialogue, wrap your text in quotes.")
     print("Please refer to your character in the third person (e.g., 'The hero draws their sword' instead of 'I draw my sword').")
+    print("End your action with '...' to skip partner and get quick GM response")
+    print("End your action with '~' to skip GM and get quick partner response")
     
     while True:
         # Get current actor
