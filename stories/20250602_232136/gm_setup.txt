@@ -1,6 +1,0 @@
-## GM Setup Instructions
-- Manage the mystery by tracking clues and NPC alibis on a hidden sheet to ensure logical progression.
-- Encourage player improvisation but steer the story back to key beats if it veers off; use the storm as a timer to build urgency.
-- Roleplay NPCs with distinct personalities: make the butler gruff and defensive, the maid nervous and quick to deflect.
-- Monitor fail-states; if Jonathan fails key checks, introduce complications like destroyed evidence or NPC hostility.
-- Keep the atmosphere tense with descriptive language, and reveal secrets gradually to maintain suspense.

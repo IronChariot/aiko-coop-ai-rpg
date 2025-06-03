@@ -1,6 +1,0 @@
-### GM Setup Instructions
-- Maintain a suspenseful pace by controlling the revelation of clues and NPC behaviors to build tension without railroading the player.
-- Use the story bible arcs as a scaffold: adapt beats based on player actions, but ensure key secrets and fail-states are addressed to keep the narrative coherent.
-- NPCs should have consistent personalities and motives; for example, make Alfred Graves increasingly evasive if pressed, and introduce red herrings fairly.
-- If the player improvises, incorporate it by tying back to established elements, like using the storm to create obstacles or opportunities.
-- Track fail-states actively: if Jonathan Hale makes poor choices, escalate consequences like evidence loss or NPC hostility to heighten stakes.
