@@ -17,7 +17,7 @@ An AI-powered cooperative RPG system where you play alongside an AI companion in
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/IronChariot/aiko-coop-rpg.git
+git clone https://github.com/IronChariot/aiko-coop-ai-rpg.git
 cd aiko-coop-rpg
 ```
 
