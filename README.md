@@ -17,7 +17,7 @@ An AI-powered cooperative RPG system where you play alongside an AI companion in
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/aiko-coop-rpg.git
+git clone https://github.com/IronChariot/aiko-coop-rpg.git
 cd aiko-coop-rpg
 ```
 
@@ -65,20 +65,8 @@ aiko-coop-rpg/
 ├─ /app                    ← all first-party source
 │  ├─ /core               (framework-agnostic plumbing)
 │  ├─ /agents             (AI agent implementations)
-│  ├─ /prompts            (prompt templates)
-│  ├─ /runtime            (session management)
 │  ├─ /ui                 (CLI and web interfaces)
-│  └─ /utils              (helper functions)
 ├─ /stories               ← one sub-folder per adventure
-└─ /tests
-```
-
-## Development
-
-### Running Tests
-
-```bash
-pytest
 ```
 
 ### Adding New Features
