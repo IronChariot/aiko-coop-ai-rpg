@@ -93,18 +93,21 @@ class TurnEngine:
 
     def generate_summary(self) -> str:
         """Generate a summary of the story so far using the GM's context."""
-        # Get all messages from GM's context
         messages = self.gm.get_messages()
         if not messages:
             return "No story progress yet."
-        
-        # Create a prompt for summary generation
-        summary_prompt = "Based on the following conversation history, provide a brief summary of what has happened in the story so far:\n\n"
-        for msg in messages:
-            summary_prompt += f"{msg['role']}: {msg['content']}\n"
-        
-        # Get summary from GM
+
+        # Ask the GM for a summary based on its existing context
+        summary_prompt = (
+            "Please provide a brief summary of what has happened in the story so far."
+        )
         summary = self.gm.process_turn(summary_prompt)
+
+        # Remove the summary prompt and response from the GM's context
+        self.gm.remove_last_messages(2)
+        if self.story_dir:
+            self.gm.save_memory(self.story_dir / "gm_memory.json")
+
         return summary
 
     def process_turn(self, player_input: Optional[str] = None) -> Dict[str, str]:
