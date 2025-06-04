@@ -253,4 +253,28 @@ class TurnEngine:
         history_file = self.story_dir / "message_history.json"
         if history_file.exists():
             with open(history_file) as f:
-                self.message_history = json.load(f) 
+                self.message_history = json.load(f)
+
+        # Rebuild the "since_partner_last_turn" context
+        self.since_partner_last_turn = []
+        last_partner_idx = -1
+        for i in range(len(self.message_history) - 1, -1, -1):
+            if self.message_history[i]["role"] == "partner":
+                last_partner_idx = i
+                break
+
+        for msg in self.message_history[last_partner_idx + 1 :]:
+            # Skip the starting scene when reloading to avoid duplication
+            if (
+                msg["role"] == "gm"
+                and msg["content"] == self.starting_scene
+                and self.message_history.index(msg) == 0
+            ):
+                continue
+
+            prefix = {
+                "gm": "GM",
+                "player": "Player",
+                "partner": "Partner",
+            }.get(msg["role"], msg["role"].capitalize())
+            self.since_partner_last_turn.append(f"{prefix}: {msg['content']}")
