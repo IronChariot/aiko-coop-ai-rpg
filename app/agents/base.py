@@ -68,4 +68,10 @@ class BaseAgent:
     def load_memory(self, filepath: Path) -> None:
         """Load the conversation history from a file."""
         if filepath.exists():
-            self.messages = eval(filepath.read_text()) 
+            self.messages = eval(filepath.read_text())
+
+    def remove_last_messages(self, count: int) -> None:
+        """Remove the last `count` messages from the history."""
+        if count <= 0:
+            return
+        self.messages = self.messages[:-count]
