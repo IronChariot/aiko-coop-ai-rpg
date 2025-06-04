@@ -278,3 +278,19 @@ class TurnEngine:
                 "partner": "Partner",
             }.get(msg["role"], msg["role"].capitalize())
             self.since_partner_last_turn.append(f"{prefix}: {msg['content']}")
+
+        # Rebuild the "since_gm_last_turn" context
+        self.since_gm_last_turn = []
+        last_gm_idx = -1
+        for i in range(len(self.message_history) - 1, -1, -1):
+            if self.message_history[i]["role"] == "gm":
+                last_gm_idx = i
+                break
+
+        for msg in self.message_history[last_gm_idx + 1 :]:
+            prefix = {
+                "gm": "GM",
+                "player": "Player",
+                "partner": "Partner",
+            }.get(msg["role"], msg["role"].capitalize())
+            self.since_gm_last_turn.append(f"{prefix}: {msg['content']}")
