@@ -1,33 +1,19 @@
 [project]
-name = "aiko-coop-rpg"
+name = "aiko-coop-ai-rpg"
 version = "0.1.0"
 description = "An AI-powered cooperative RPG system"
 authors = [
-    {name = "Your Name", email = "your.email@example.com"}
+    {name = "Zam Wulfstone"}
 ]
 dependencies = [
-    "openai>=1.0.0",
-    "python-dotenv>=1.0.0",
-    "jinja2>=3.1.0",
-    "pydantic>=2.0.0",
-    "fastapi>=0.100.0",
-    "uvicorn>=0.22.0",
-    "python-multipart>=0.0.6",
+    "openai>=1.82.0",
+    "pyyaml>=6.0.0",
 ]
 requires-python = ">=3.9"
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools>=67"]
+build-backend = "setuptools.build_meta"
 
-[tool.ruff]
-line-length = 100
-target-version = "py39"
-
-[tool.ruff.lint]
-select = ["E", "F", "I", "N", "W"]
-ignore = []
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-python_files = ["test_*.py"] 
+[tool.setuptools.packages.find]
+packages = ["app"]
