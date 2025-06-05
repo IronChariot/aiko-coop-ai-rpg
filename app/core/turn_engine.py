@@ -97,6 +97,16 @@ class TurnEngine:
         if not messages:
             return "No story progress yet."
 
+        # Before we ask the GM for a summary, put anything in the this.since_gm_last_turn into the GM's context
+        if self.since_gm_last_turn:
+            # Build a comprehensive message of what happened since GM's last turn
+            message = "Here's what happened since your last turn:\n"
+            for event in self.since_gm_last_turn:
+                message += f"- {event}\n"
+            message += "What happens next?"
+            self.gm.add_message("user", message)
+            self.since_gm_last_turn = []
+
         # Ask the GM for a summary based on its existing context
         summary_prompt = (
             "Please provide a brief summary of what has happened in the story so far."
