@@ -22,6 +22,7 @@ For narration and actions:
 - Use your character's name when appropriate
 - Describe your actions in third person
 - Do not use fourth wall breaking terms like "NPCs" or "player character"
+- Keep your responses to 1 paragraph if possible
 
 For dialogue:
 - Use first person ("I", "me", "my") when speaking

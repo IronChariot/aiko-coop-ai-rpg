@@ -97,6 +97,16 @@ class TurnEngine:
         if not messages:
             return "No story progress yet."
 
+        # Before we ask the GM for a summary, put anything in the this.since_gm_last_turn into the GM's context
+        if self.since_gm_last_turn:
+            # Build a comprehensive message of what happened since GM's last turn
+            message = "Here's what happened since your last turn:\n"
+            for event in self.since_gm_last_turn:
+                message += f"- {event}\n"
+            message += "What happens next?"
+            self.gm.add_message("user", message)
+            self.since_gm_last_turn = []
+
         # Ask the GM for a summary based on its existing context
         summary_prompt = (
             "Please provide a brief summary of what has happened in the story so far."
@@ -278,3 +288,19 @@ class TurnEngine:
                 "partner": "Partner",
             }.get(msg["role"], msg["role"].capitalize())
             self.since_partner_last_turn.append(f"{prefix}: {msg['content']}")
+
+        # Rebuild the "since_gm_last_turn" context
+        self.since_gm_last_turn = []
+        last_gm_idx = -1
+        for i in range(len(self.message_history) - 1, -1, -1):
+            if self.message_history[i]["role"] == "gm":
+                last_gm_idx = i
+                break
+
+        for msg in self.message_history[last_gm_idx + 1 :]:
+            prefix = {
+                "gm": "GM",
+                "player": "Player",
+                "partner": "Partner",
+            }.get(msg["role"], msg["role"].capitalize())
+            self.since_gm_last_turn.append(f"{prefix}: {msg['content']}")
